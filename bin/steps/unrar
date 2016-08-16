@@ -28,7 +28,7 @@ if (pip-grep -s requirements.txt rarfile &> /dev/null) then
     cd /app/.heroku/vendor/unrar; make -f makefile
     cd /app/.heroku/vendor/unrar; install -v -m755 unrar "/app/.heroku/vendor/unrar/bin"
 
-    export UNRAR=$(pwd)/vendor
+    #export UNRAR=$(pwd)/vendor
 fi
 
 bpwatch stop unrar_install
