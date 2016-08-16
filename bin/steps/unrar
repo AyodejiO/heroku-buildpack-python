@@ -25,10 +25,10 @@ if (pip-grep -s requirements.txt rarfile &> /dev/null) then
     # Download and extract unrar into target vendor directory.
     curl $VENDORED_UNRAR -s | tar zxv -C .heroku/vendor &> /dev/null
 
-    cd $(pwd)/vendor/unrar; make -f makefile &> /dev/null
-    cd $(pwd)/vendor/unrar; install -v -m755 unrar "$(pwd)/vendor/unrar/bin"
+    cd /app/.heroku/vendor/unrar; make -f makefile &> /dev/null
+    cd /app/.heroku/vendor/unrar; install -v -m755
 
-    #export UNRAR=$(pwd)/vendor/unrar/bin
+    #export UNRAR=$(pwd)/vendor
 fi
 
 bpwatch stop unrar_install
