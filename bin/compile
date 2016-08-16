@@ -207,15 +207,16 @@ sub-env $BIN_DIR/steps/geo-libs
 # xmlsec support
 source $BIN_DIR/steps/xmlsec
 
-# rar files support
-echo "---> Run Step unrar"
-source $BIN_DIR/steps/unrar
 
 # GDAL support.
 source $BIN_DIR/steps/gdal
 
 # Install dependencies with Pip.
 source $BIN_DIR/steps/pip-install
+
+# rar files support
+echo "---> Run Step unrar"
+source $BIN_DIR/steps/unrar
 
 # Django collectstatic support.
 sub-env $BIN_DIR/steps/collectstatic
