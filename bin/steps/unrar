@@ -10,7 +10,7 @@
 # This script is invoked by [`bin/compile`](/).
 
 # The location of the pre-compiled libffi binary.
-VENDORED_LIBFFI="http://www.rarlab.com/rar/unrarsrc-5.3.11.tar.gz"
+VENDORED_UNRAR="http://www.rarlab.com/rar/unrarsrc-5.3.11.tar.gz"
 
 #PKG_CONFIG_PATH="/app/.heroku/vendor/lib/pkgconfig:$PKG_CONFIG_PATH"
 
@@ -20,10 +20,13 @@ source $BIN_DIR/utils
 bpwatch start unrar_install
 
 if (pip-grep -s requirements.txt rarfile &> /dev/null) then
-    echo "-----> Noticed unrar. Bootstrapping unrar."
+    echo "-----> Noticed rarfile. Bootstrapping unrar."
     mkdir -p .heroku/vendor
     # Download and extract unrar into target vendor directory.
-    curl $VENDORED_LIBFFI -s | tar zxv -C .heroku/vendor &> /dev/null
+    curl $VENDORED_UNRAR -s | tar zxv -C .heroku/vendor &> /dev/null
+
+    cd .heroku/vendor/unrar; make -f makefile
+    cd .heroku/vendor/unrar; install -v -m755 unrar ".heroku/vendor/unrar/bin"
 
     export UNRAR=$(pwd)/vendor
 fi
