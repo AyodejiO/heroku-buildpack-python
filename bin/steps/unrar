@@ -7,14 +7,15 @@
 # Debug
 # set -x
 
+BUILD_DIR=$1
+VENDOR_DIR=".heroku/vendor"
+#PROFILE_PATH="$BUILD_DIR/.profile.d/p7zip.sh"
 # Syntax sugar.
 source $BIN_DIR/utils
 
-BUILD_DIR=$1
-VENDOR_DIR="$BUILD_DIR/vendor"
-#PROFILE_PATH="$BUILD_DIR/.profile.d/p7zip.sh"
+bpwatch start unrar_install
 
-mkdir -p $VENDOR_DIR
+#mkdir -p $VENDOR_DIR
 #mkdir -p $(dirname $PROFILE_PATH)
 
 echo "-----> Fetching and vendoring p7zip"
@@ -30,3 +31,4 @@ cd /app/bin/temp/unrar; make -f makefile
 cd /app/bin/temp/unrar; install -v -m755 unrar "$VENDOR_DIR/p7zip/bin"
 
 #echo "export PATH=\$PATH:/app/vendor/p7zip/bin" >> $PROFILE_PATH
+bpwatch stop unrar_install
