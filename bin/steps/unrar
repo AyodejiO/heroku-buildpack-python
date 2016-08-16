@@ -1,36 +1,31 @@
 #!/usr/bin/env bash
-# bin/compile <build-dir> <cache-dir> <env-dir>
 
-# Fail fast
-set -e
+# This script serves as the Pylibmc build step of the
+# [**Python Buildpack**](https://github.com/heroku/heroku-buildpack-python)
+# compiler.
+#
+# A [buildpack](https://devcenter.heroku.com/articles/buildpacks) is an
+# adapter between a Python application and Heroku's runtime.
+#
+# This script is invoked by [`bin/compile`](/).
+
+# The location of the pre-compiled libffi binary.
+VENDORED_LIBFFI="http://www.rarlab.com/rar/unrarsrc-5.3.11.tar.gz"
+
+#PKG_CONFIG_PATH="/app/.heroku/vendor/lib/pkgconfig:$PKG_CONFIG_PATH"
 
 # Syntax sugar.
 source $BIN_DIR/utils
 
-# Debug
-# set -x
-
 bpwatch start unrar_install
 
-BUILD_DIR=$1
-VENDOR_DIR="$BUILD_DIR/vendor"
-PROFILE_PATH="$BUILD_DIR/.profile.d/p7zip.sh"
+if (pip-grep -s requirements.txt rarfile &> /dev/null) then
+    echo "-----> Noticed unrar. Bootstrapping unrar."
+    mkdir -p .heroku/vendor
+    # Download and extract unrar into target vendor directory.
+    curl $VENDORED_LIBFFI -s | tar zxv -C .heroku/vendor &> /dev/null
 
-mkdir -p $VENDOR_DIR
-mkdir -p $(dirname $PROFILE_PATH)
-
-echo "-----> Fetching and vendoring p7zip"
-echo "       Using p7zip version: 9.20.1"
-curl "https://s3.amazonaws.com/opendoor-deps/p7zip_9.20.1.tar.gz" -s -o - | tar xzf - -C "$VENDOR_DIR"
-mv "$VENDOR_DIR/p7zip_9.20.1" "$VENDOR_DIR/p7zip"
-
-mkdir -p /app/bin/temp
-mkdir -p /app/vendor/unrar/bin
-wget "http://www.rarlab.com/rar/unrarsrc-5.3.11.tar.gz" -O /app/bin/temp/unrarsrc-5.3.11.tar.gz
-tar -zxvf /app/bin/temp/unrarsrc-5.3.11.tar.gz -C /app/bin/temp
-cd /app/bin/temp/unrar; make -f makefile
-cd /app/bin/temp/unrar; install -v -m755 unrar "$VENDOR_DIR/p7zip/bin"
-
-echo "export PATH=\$PATH:/app/vendor/p7zip/bin" >> $PROFILE_PATH
+    export UNRAR=$(pwd)/vendor
+fi
 
 bpwatch stop unrar_install
